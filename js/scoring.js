@@ -1,12 +1,12 @@
 /**
- * Scoring Engine for Card Game
- * Handles bid scoring and player score updates
+ * Scoring engine for the card game
+ * Handles score calculation and player score updates
  */
 
 /**
  * Calculate the score for a single round based on bid and tricks taken
- * @param {number} bid - The player's bid (number of tricks they expect to take)
- * @param {number} tricksTaken - The actual number of tricks the player took
+ * @param {number} bid - The number of tricks the player bid
+ * @param {number} tricksTaken - The actual number of tricks taken
  * @param {number} cardsDealt - The number of cards dealt this round
  * @returns {number} The score for this round
  */
@@ -17,14 +17,14 @@ function calculateRoundScore(bid, tricksTaken, cardsDealt) {
   }
   
   if (bid < 0 || tricksTaken < 0 || cardsDealt < 0) {
-    throw new Error('Parameters cannot be negative');
+    throw new Error('All parameters must be non-negative');
   }
   
-  if (tricksTaken > cardsDealt) {
-    throw new Error('Tricks taken cannot exceed cards dealt');
+  if (tricksTaken > cardsDealt || bid > cardsDealt) {
+    throw new Error('Bid and tricks taken cannot exceed cards dealt');
   }
   
-  // Handle zero bid special rules
+  // Special case: zero bid
   if (bid === 0) {
     if (tricksTaken === 0) {
       // Successful zero bid: +10 × cards dealt
@@ -35,9 +35,9 @@ function calculateRoundScore(bid, tricksTaken, cardsDealt) {
     }
   }
   
-  // Regular bidding logic
+  // Regular bidding
   if (bid === tricksTaken) {
-    // Correct bid: +20 per trick
+    // Correct bid: +20 per trick taken
     return 20 * tricksTaken;
   } else {
     // Incorrect bid: -10 per trick off
@@ -47,42 +47,34 @@ function calculateRoundScore(bid, tricksTaken, cardsDealt) {
 }
 
 /**
- * Update player scores with round results
+ * Update player scores by applying round results
  * @param {Array} players - Array of player objects with score property
  * @param {Array} roundResults - Array of round result objects with playerId and score
  * @returns {Array} Updated players array
  */
 function updatePlayerScores(players, roundResults) {
   // Input validation
-  if (!Array.isArray(players)) {
-    throw new Error('Players must be an array');
+  if (!Array.isArray(players) || !Array.isArray(roundResults)) {
+    throw new Error('Both parameters must be arrays');
   }
   
-  if (!Array.isArray(roundResults)) {
-    throw new Error('Round results must be an array');
-  }
-  
-  // Create a copy of players to avoid mutation
+  // Create a copy of players to avoid mutating the original
   const updatedPlayers = players.map(player => ({ ...player }));
   
-  // Apply score changes
+  // Apply each round result
   roundResults.forEach(result => {
-    if (!result.hasOwnProperty('playerId') || !result.hasOwnProperty('score')) {
-      throw new Error('Round result must have playerId and score properties');
+    if (!result.hasOwnProperty('playerId') || typeof result.score !== 'number') {
+      throw new Error('Round results must have playerId and numeric score properties');
     }
     
     const player = updatedPlayers.find(p => p.id === result.playerId);
-    if (!player) {
-      throw new Error(`Player with ID ${result.playerId} not found`);
+    if (player) {
+      // Initialize score if it doesn't exist
+      if (typeof player.score !== 'number') {
+        player.score = 0;
+      }
+      player.score += result.score;
     }
-    
-    // Initialize score if it doesn't exist
-    if (typeof player.score !== 'number') {
-      player.score = 0;
-    }
-    
-    // Apply the round score
-    player.score += result.score;
   });
   
   return updatedPlayers;
@@ -95,7 +87,7 @@ if (typeof module !== 'undefined' && module.exports) {
     calculateRoundScore,
     updatePlayerScores
   };
-} else if (typeof window !== 'undefined') {
+} else {
   // Browser environment
   window.Scoring = {
     calculateRoundScore,
