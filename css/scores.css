@@ -1,0 +1,338 @@
+/* Scores CSS - Specialized styling for score display components */
+
+/* Leader Display Section */
+.leader-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.leader-display::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+}
+
+.leader-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+}
+
+.leader-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.leader-name {
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.leader-score {
+    font-size: 3rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.leader-badge {
+    font-size: 4rem;
+    opacity: 0.8;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff;
+    }
+    to {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+    }
+}
+
+/* Tables Base Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.9rem;
+}
+
+thead {
+    background: #34495e;
+    color: white;
+}
+
+th, td {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+th {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+}
+
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Leader Row Highlighting */
+.leader-row {
+    background: linear-gradient(90deg, #fff3cd 0%, #ffffff 100%) !important;
+    border-left: 4px solid #ffc107;
+    font-weight: 600;
+}
+
+.leader-row:hover {
+    background: linear-gradient(90deg, #ffeaa7 0%, #f8f9fa 100%) !important;
+}
+
+/* Standings Table Specific */
+.standings-table {
+    min-width: 600px;
+}
+
+.standings-table .rank {
+    width: 80px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.standings-table .player-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.standings-table .score {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #27ae60;
+    text-align: right;
+}
+
+.standings-table .status {
+    text-align: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status.leader {
+    background: #fff3e0;
+    color: #f57c00;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 124, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(245, 124, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 124, 0, 0);
+    }
+}
+
+/* Round Breakdown Table Specific */
+.round-breakdown-table {
+    min-width: 800px;
+}
+
+.round-breakdown-table .player-name {
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 120px;
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 2;
+}
+
+.round-breakdown-table .round-score {
+    text-align: center;
+    font-weight: 600;
+    padding: 1rem 0.5rem;
+    position: relative;
+}
+
+.round-breakdown-table .round-score::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: #dee2e6;
+}
+
+.round-breakdown-table .total-score {
+    background: #f8f9fa;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #27ae60;
+    text-align: center;
+    border-left: 2px solid #27ae60;
+}
+
+/* Round Score Color Coding */
+.round-score {
+    background: #f8f9fa;
+}
+
+.round-breakdown-table .leader-row .round-score {
+    background: #fff3cd;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .leader-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .leader-name {
+        font-size: 1.5rem;
+    }
+    
+    .leader-score {
+        font-size: 2.5rem;
+    }
+    
+    .leader-badge {
+        font-size: 3rem;
+    }
+    
+    th, td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .standings-table,
+    .round-breakdown-table {
+        font-size: 0.8rem;
+    }
+    
+    .table-container {
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .leader-name {
+        font-size: 1.25rem;
+    }
+    
+    .leader-score {
+        font-size: 2rem;
+    }
+    
+    .leader-badge {
+        font-size: 2rem;
+    }
+    
+    th, td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .standings-table,
+    .round-breakdown-table {
+        font-size: 0.75rem;
+        min-width: auto;
+    }
+    
+    .standings-table .rank {
+        width: 50px;
+    }
+    
+    .round-breakdown-table .player-name {
+        min-width: 80px;
+    }
+    
+    /* Stack table cells vertically on very small screens */
+    .mobile-stack {
+        display: block;
+    }
+    
+    .mobile-stack thead {
+        display: none;
+    }
+    
+    .mobile-stack tr {
+        display: block;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+    
+    .mobile-stack td {
+        display: block;
+        text-align: right;
+        border: none;
+        padding: 0.25rem 0;
+    }
+    
+    .mobile-stack td::before {
+        content: attr(data-label) ': ';
+        float: left;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .leader-display {
+        background: white !important;
+        color: black !important;
+        border: 2px solid #333;
+    }
+    
+    .leader-badge {
+        display: none;
+    }
+    
+    table {
+        page-break-inside: avoid;
+    }
+    
+    thead {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+    
+    .leader-row {
+        background: #f0f0f0 !important;
+    }
+}
