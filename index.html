@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Setup</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Player Setup</h1>
+        <form id="playerForm" class="player-form">
+            <div class="input-group">
+                <label for="playerName">Player Name:</label>
+                <input type="text" id="playerName" name="playerName" required>
+                <button type="submit" class="btn btn-primary">Add Player</button>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+        
+        <div class="player-list-section">
+            <h2>Current Players (<span id="playerCount">0</span>/8)</h2>
+            <ul id="playerList" class="player-list"></ul>
+            <div id="validationMessage" class="validation-message"></div>
+        </div>
+    </div>
+    
+    <script src="js/playerSetup.js"></script>
+    <script>
+        const playerSetup = new PlayerSetup();
+    </script>
+</body>
+</html>
