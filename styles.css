@@ -1,0 +1,153 @@
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Input field styles */
+input, textarea, select {
+  padding: 10px 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #007acc;
+  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+}
+
+/* Valid input state - green border */
+input.valid, textarea.valid, select.valid {
+  border-color: #28a745;
+}
+
+input.valid:focus, textarea.valid:focus, select.valid:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Invalid input state - red border */
+input.invalid, textarea.invalid, select.invalid {
+  border-color: #dc3545;
+}
+
+input.invalid:focus, textarea.invalid:focus, select.invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* CSS3 pseudo-class for native validation */
+input:invalid, textarea:invalid, select:invalid {
+  border-color: #dc3545;
+}
+
+input:invalid:focus, textarea:invalid:focus, select:invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Error message styling */
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+  line-height: 1.4;
+}
+
+/* Form group container for better spacing */
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Hover states for better UX */
+input:hover, textarea:hover, select:hover {
+  border-color: #b0b8c1;
+}
+
+input.valid:hover, textarea.valid:hover, select.valid:hover {
+  border-color: #1e7e34;
+}
+
+input.invalid:hover, textarea.invalid:hover, select.invalid:hover {
+  border-color: #c82333;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  input, textarea, select {
+    padding: 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .error-message {
+    font-size: 13px;
+    margin-top: 6px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+}
+
+/* Success message styling */
+.success-message {
+  color: #28a745;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+  line-height: 1.4;
+}
+
+/* Button styles for consistency */
+button, input[type="submit"] {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+/* Disabled state */
+input:disabled, textarea:disabled, select:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Required field indicator */
+.required::after {
+  content: " *";
+  color: #dc3545;
+}
