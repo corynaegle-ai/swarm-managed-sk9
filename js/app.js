@@ -1,223 +1,252 @@
-/**
- * Main application controller that integrates player setup with game flow
- * Manages game state transitions between setup and playing phases
- */
-class GameApp {
+// Game state management
+class GameState {
     constructor() {
-        this.gameStarted = false; // Boolean flag to track game state
-        this.playerSetup = null;
-        this.finalPlayerList = []; // Store final player list for game
-        
-        this.init();
+        this.players = [];
+        this.rounds = [];
+        this.currentRound = 0;
     }
-    
-    /**
-     * Initialize the application
-     */
-    init() {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.setupApp());
-        } else {
-            this.setupApp();
+
+    addPlayer(name) {
+        if (name && !this.players.find(p => p.name === name)) {
+            this.players.push({
+                id: Date.now().toString(),
+                name: name
+            });
+            return true;
+        }
+        return false;
+    }
+
+    newRound() {
+        const roundData = {
+            roundNumber: this.rounds.length + 1,
+            players: {}
+        };
+        
+        this.players.forEach(player => {
+            roundData.players[player.id] = {
+                bid: 0,
+                actual: 0,
+                bonus: 0,
+                score: 0
+            };
+        });
+        
+        this.rounds.push(roundData);
+        this.currentRound = this.rounds.length - 1;
+    }
+
+    updatePlayerData(playerId, field, value) {
+        if (this.rounds.length === 0) {
+            this.newRound();
+        }
+        
+        const currentRoundData = this.rounds[this.currentRound];
+        if (currentRoundData && currentRoundData.players[playerId]) {
+            currentRoundData.players[playerId][field] = parseInt(value) || 0;
+            this.calculateScore(playerId);
         }
     }
-    
-    /**
-     * Setup the application after DOM is ready
-     */
-    setupApp() {
-        // Initialize player setup
-        this.playerSetup = new PlayerSetup();
-        
-        // Setup event listeners
-        this.setupEventListeners();
-        
-        console.log('Game application initialized');
-    }
-    
-    /**
-     * Setup event listeners for the application
-     */
-    setupEventListeners() {
-        const startGameBtn = document.getElementById('start-game-btn');
-        
-        if (startGameBtn) {
-            startGameBtn.addEventListener('click', () => this.handleStartGame());
-        }
-    }
-    
-    /**
-     * Handle Start Game button click
-     * Validates players and transitions to game mode
-     */
-    handleStartGame() {
-        try {
-            // Validate player count before proceeding
-            if (!this.validatePlayerCount()) {
-                return;
+
+    calculateScore(playerId) {
+        const currentRoundData = this.rounds[this.currentRound];
+        if (currentRoundData && currentRoundData.players[playerId]) {
+            const playerData = currentRoundData.players[playerId];
+            const bid = playerData.bid;
+            const actual = playerData.actual;
+            const bonus = playerData.bonus;
+            
+            // Basic scoring: 10 points if bid matches actual, plus bonus points
+            let score = bonus;
+            if (bid === actual) {
+                score += 10 + actual;
             }
             
-            // Get final player list from PlayerSetup
-            this.finalPlayerList = this.playerSetup.getPlayers();
-            
-            // Transition to game mode
-            this.startGame();
-            
-        } catch (error) {
-            console.error('Error starting game:', error);
-            this.showError('An error occurred while starting the game. Please try again.');
+            playerData.score = score;
         }
     }
-    
-    /**
-     * Validate that there are enough players to start the game
-     * @returns {boolean} True if validation passes
-     */
-    validatePlayerCount() {
-        const players = this.playerSetup.getPlayers();
-        
-        // Clear any existing error messages
-        this.hideError();
-        
-        // Check minimum player count (at least 2 players required)
-        if (players.length < 2) {
-            this.showError('At least 2 players are required to start the game.');
-            return false;
-        }
-        
-        // Check maximum player count (reasonable limit)
-        if (players.length > 8) {
-            this.showError('Maximum of 8 players allowed.');
-            return false;
-        }
-        
-        return true;
+
+    getTotalScore(playerId) {
+        return this.rounds.reduce((total, round) => {
+            return total + (round.players[playerId]?.score || 0);
+        }, 0);
     }
-    
-    /**
-     * Start the game - transition from setup to playing phase
-     */
-    startGame() {
-        // Update game state
-        this.gameStarted = true;
-        
-        // Hide player setup form
-        this.hidePlayerSetup();
-        
-        // Show game area
-        this.showGameArea();
-        
-        // Display final player list in game area
-        this.displayGamePlayers();
-        
-        // Prevent further player modifications
-        this.lockPlayerModifications();
-        
-        console.log('Game started with players:', this.finalPlayerList);
-    }
-    
-    /**
-     * Hide the player setup section
-     */
-    hidePlayerSetup() {
-        const setupSection = document.getElementById('player-setup-section');
-        if (setupSection) {
-            setupSection.classList.add('hidden');
-        }
-    }
-    
-    /**
-     * Show the game area
-     */
-    showGameArea() {
-        const gameArea = document.getElementById('game-area');
-        if (gameArea) {
-            gameArea.classList.remove('hidden');
-        }
-    }
-    
-    /**
-     * Display the final player list in the game area
-     */
-    displayGamePlayers() {
-        const gamePlayersList = document.getElementById('game-players-list');
-        if (gamePlayersList) {
-            gamePlayersList.innerHTML = '';
-            
-            this.finalPlayerList.forEach((player, index) => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-item';
-                playerDiv.textContent = `${index + 1}. ${player.name}`;
-                gamePlayersList.appendChild(playerDiv);
-            });
-        }
-    }
-    
-    /**
-     * Lock player modifications by disabling PlayerSetup functionality
-     */
-    lockPlayerModifications() {
-        if (this.playerSetup) {
-            // Disable form inputs to prevent modifications
-            const nameInput = document.getElementById('player-name-input');
-            const addBtn = document.getElementById('add-player-btn');
-            
-            if (nameInput) nameInput.disabled = true;
-            if (addBtn) addBtn.disabled = true;
-            
-            // Disable remove buttons on existing players
-            const removeButtons = document.querySelectorAll('.remove-player-btn');
-            removeButtons.forEach(btn => btn.disabled = true);
-        }
-    }
-    
-    /**
-     * Show error message to user
-     * @param {string} message - Error message to display
-     */
-    showError(message) {
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-        }
-    }
-    
-    /**
-     * Hide error message
-     */
-    hideError() {
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    /**
-     * Get the current game state
-     * @returns {boolean} True if game has started, false if in setup mode
-     */
-    isGameStarted() {
-        return this.gameStarted;
-    }
-    
-    /**
-     * Get the final player list (available after game starts)
-     * @returns {Array} Array of player objects
-     */
-    getFinalPlayerList() {
-        return [...this.finalPlayerList]; // Return copy to prevent external modifications
-    }
-    
-    /**
-     * Get reference to PlayerSetup instance
-     * @returns {PlayerSetup|null} PlayerSetup instance or null if not initialized
-     */
-    getPlayerSetup() {
-        return this.playerSetup;
+
+    reset() {
+        this.players = [];
+        this.rounds = [];
+        this.currentRound = 0;
     }
 }
 
-// Initialize the application
-const gameApp = new GameApp();
+// Global game state
+const gameState = new GameState();
+
+// DOM manipulation functions
+function updatePlayersList() {
+    const playersList = document.getElementById('players-list');
+    playersList.innerHTML = '';
+    
+    gameState.players.forEach(player => {
+        const playerTag = document.createElement('div');
+        playerTag.className = 'player-tag';
+        playerTag.textContent = player.name;
+        playersList.appendChild(playerTag);
+    });
+}
+
+function updateScorecard() {
+    const playerRows = document.getElementById('player-rows');
+    playerRows.innerHTML = '';
+    
+    if (gameState.rounds.length === 0 || gameState.players.length === 0) {
+        return;
+    }
+    
+    const currentRoundData = gameState.rounds[gameState.currentRound];
+    
+    gameState.players.forEach(player => {
+        const playerData = currentRoundData.players[player.id] || { bid: 0, actual: 0, bonus: 0, score: 0 };
+        
+        const row = document.createElement('div');
+        row.className = 'player-row';
+        
+        row.innerHTML = `
+            <div class="player-name">${player.name}</div>
+            <div class="bid-column">
+                <input type="number" class="bid-input" 
+                       data-player-id="${player.id}" 
+                       value="${playerData.bid}" 
+                       min="0">
+            </div>
+            <div class="actual-column">
+                <input type="number" class="actual-input" 
+                       data-player-id="${player.id}" 
+                       value="${playerData.actual}" 
+                       min="0">
+            </div>
+            <div class="bonus-column">
+                <input type="number" class="bonus-input" 
+                       data-player-id="${player.id}" 
+                       value="${playerData.bonus}" 
+                       min="0" 
+                       placeholder="Bonus">
+            </div>
+            <div class="score-column">
+                <div class="score-display">${playerData.score}</div>
+            </div>
+        `;
+        
+        playerRows.appendChild(row);
+    });
+    
+    // Add event listeners to input fields
+    addInputEventListeners();
+}
+
+function addInputEventListeners() {
+    // Bid inputs
+    document.querySelectorAll('.bid-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const playerId = e.target.dataset.playerId;
+            const value = e.target.value;
+            gameState.updatePlayerData(playerId, 'bid', value);
+            updateScorecard();
+            updateTotalScores();
+        });
+    });
+    
+    // Actual tricks inputs
+    document.querySelectorAll('.actual-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const playerId = e.target.dataset.playerId;
+            const value = e.target.value;
+            gameState.updatePlayerData(playerId, 'actual', value);
+            updateScorecard();
+            updateTotalScores();
+        });
+    });
+    
+    // Bonus points inputs
+    document.querySelectorAll('.bonus-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const playerId = e.target.dataset.playerId;
+            const value = e.target.value;
+            gameState.updatePlayerData(playerId, 'bonus', value);
+            updateScorecard();
+            updateTotalScores();
+        });
+    });
+}
+
+function updateTotalScores() {
+    const totalScores = document.getElementById('total-scores');
+    totalScores.innerHTML = '';
+    
+    gameState.players.forEach(player => {
+        const totalScore = gameState.getTotalScore(player.id);
+        
+        const scoreItem = document.createElement('div');
+        scoreItem.className = 'total-score-item';
+        scoreItem.innerHTML = `
+            <div class="total-score-name">${player.name}</div>
+            <div class="total-score-value">${totalScore}</div>
+        `;
+        
+        totalScores.appendChild(scoreItem);
+    });
+}
+
+// Event listeners for main controls
+document.addEventListener('DOMContentLoaded', () => {
+    // Add player functionality
+    const addPlayerBtn = document.getElementById('add-player-btn');
+    const playerNameInput = document.getElementById('player-name-input');
+    
+    addPlayerBtn.addEventListener('click', () => {
+        const name = playerNameInput.value.trim();
+        if (gameState.addPlayer(name)) {
+            playerNameInput.value = '';
+            updatePlayersList();
+            updateScorecard();
+            updateTotalScores();
+        } else {
+            alert('Player name already exists or is invalid!');
+        }
+    });
+    
+    playerNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addPlayerBtn.click();
+        }
+    });
+    
+    // New round functionality
+    const newRoundBtn = document.getElementById('new-round-btn');
+    newRoundBtn.addEventListener('click', () => {
+        if (gameState.players.length === 0) {
+            alert('Please add players first!');
+            return;
+        }
+        
+        gameState.newRound();
+        updateScorecard();
+        updateTotalScores();
+    });
+    
+    // Reset game functionality
+    const resetGameBtn = document.getElementById('reset-game-btn');
+    resetGameBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset the entire game?')) {
+            gameState.reset();
+            updatePlayersList();
+            updateScorecard();
+            updateTotalScores();
+        }
+    });
+    
+    // Initialize the interface
+    updatePlayersList();
+    updateScorecard();
+    updateTotalScores();
+});
