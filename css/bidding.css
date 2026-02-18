@@ -1,0 +1,464 @@
+/* CSS Custom Properties for Bidding Theme */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --success-color: #27ae60;
+  --error-color: #e74c3c;
+  --warning-color: #f39c12;
+  --background-color: #ecf0f1;
+  --text-color: #2c3e50;
+  --border-color: #bdc3c7;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --min-touch-target: 44px;
+}
+
+/* Bidding Container */
+.bidding-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+/* Round Information Display */
+.round-info {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.round-info h2 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+}
+
+.round-info .round-details {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.round-info .detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.round-info .detail-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  margin-bottom: var(--spacing-xs);
+}
+
+.round-info .detail-value {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
+/* Player Bid Input Grid */
+.bidding-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.player-bid-card {
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  box-shadow: 0 2px 4px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.player-bid-card:hover {
+  border-color: var(--secondary-color);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.player-bid-card.current-player {
+  border-color: var(--secondary-color);
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.1));
+}
+
+.player-name {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.bid-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.bid-input-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.bid-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+  transition: border-color 0.3s ease;
+  min-height: var(--min-touch-target);
+  box-sizing: border-box;
+}
+
+.bid-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.bid-input:invalid {
+  border-color: var(--error-color);
+}
+
+.bid-input.error {
+  border-color: var(--error-color);
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Error Messages */
+.error-message {
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.error-message::before {
+  content: '⚠';
+  font-weight: bold;
+}
+
+.error-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-md) 0 0 0;
+}
+
+.error-list li {
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Action Buttons */
+.bidding-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: var(--min-touch-target);
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), #34495e);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34495e, var(--primary-color));
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5dade2, var(--secondary-color));
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-color), #58d68d);
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #58d68d, var(--success-color));
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning-color), #f7dc6f);
+  color: var(--text-color);
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f7dc6f, var(--warning-color));
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--error-color), #ec7063);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ec7063, var(--error-color));
+}
+
+/* Status Indicators */
+.bid-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-sm);
+}
+
+.bid-status.valid {
+  background-color: rgba(39, 174, 96, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.bid-status.invalid {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--error-color);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.bid-status.pending {
+  background-color: rgba(243, 156, 18, 0.1);
+  color: var(--warning-color);
+  border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .bidding-container {
+    padding: var(--spacing-md);
+    margin: var(--spacing-sm);
+  }
+
+  .round-info {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .round-info h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .round-info .round-details {
+    gap: var(--spacing-md);
+  }
+
+  .bidding-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .player-bid-card {
+    padding: var(--spacing-md);
+  }
+
+  .bidding-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    min-width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+  }
+
+  .bidding-container {
+    padding: var(--spacing-sm);
+    margin: var(--spacing-xs);
+  }
+
+  .round-info {
+    padding: var(--spacing-sm);
+  }
+
+  .round-info .round-details {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .detail-item {
+    min-width: auto;
+  }
+
+  .player-bid-card {
+    padding: var(--spacing-sm);
+  }
+
+  .bid-input {
+    padding: var(--spacing-sm);
+  }
+
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Touch device enhancements */
+@media (hover: none) and (pointer: coarse) {
+  .player-bid-card:hover {
+    border-color: var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+  }
+
+  .btn:hover {
+    transform: none;
+    box-shadow: 0 2px 4px var(--shadow-color);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Ensure touch targets are large enough */
+  .bid-input,
+  .btn {
+    min-height: 48px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .player-bid-card {
+    border-width: 3px;
+  }
+
+  .bid-input {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .bidding-container {
+    box-shadow: none;
+    background: white;
+  }
+
+  .round-info {
+    background: white;
+    color: black;
+    border: 2px solid black;
+  }
+
+  .player-bid-card {
+    box-shadow: none;
+    border: 1px solid black;
+  }
+
+  .btn {
+    display: none;
+  }
+
+  .error-message {
+    border: 1px solid black;
+    background: white;
+  }
+}
