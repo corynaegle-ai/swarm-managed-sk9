@@ -1,0 +1,7 @@
+{
+  "name": "sk9",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "mkdir -p dist && cp -r index.html bidding.html style.css styles.css app.js js css dist/"
+  }
+}
