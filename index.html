@@ -3,20 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanilla JS App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Game Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .player-setup {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .game-area {
+            border: 1px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #dc3545;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            background-color: #f8d7da;
+        }
+        .player-list {
+            margin: 10px 0;
+        }
+        .player-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Vanilla JS Application</h1>
-        </header>
-        <main>
-            <div id="content">
-                <p>Welcome to your Vanilla JS app!</p>
-            </div>
-        </main>
+    <h1>Game Application</h1>
+    
+    <div id="player-setup-section" class="player-setup">
+        <h2>Player Setup</h2>
+        <div id="player-setup-form">
+            <input type="text" id="player-name-input" placeholder="Enter player name" maxlength="50">
+            <button id="add-player-btn">Add Player</button>
+        </div>
+        
+        <div id="players-list" class="player-list">
+            <h3>Players:</h3>
+            <div id="players-container"></div>
+        </div>
+        
+        <div id="error-message" class="error-message hidden"></div>
+        
+        <button id="start-game-btn">Start Game</button>
     </div>
-    <script src="app.js"></script>
+    
+    <div id="game-area" class="game-area hidden">
+        <h2>Game in Progress</h2>
+        <div id="game-players">
+            <h3>Players in Game:</h3>
+            <div id="game-players-list"></div>
+        </div>
+        <p>Game is now active. Player setup is locked.</p>
+    </div>
+    
+    <script src="js/PlayerSetup.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

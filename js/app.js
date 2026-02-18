@@ -1,265 +1,223 @@
-// Main game application logic with round management integration
-import { RoundManager } from './RoundManager.js';
-import { HandManager } from './HandManager.js';
-import { ScoreManager } from './ScoreManager.js';
-
-class SkullKingGame {
+/**
+ * Main application controller that integrates player setup with game flow
+ * Manages game state transitions between setup and playing phases
+ */
+class GameApp {
     constructor() {
-        this.roundManager = new RoundManager();
-        this.handManager = new HandManager();
-        this.scoreManager = new ScoreManager();
-        this.gameEnded = false;
+        this.gameStarted = false; // Boolean flag to track game state
+        this.playerSetup = null;
+        this.finalPlayerList = []; // Store final player list for game
         
-        this.initializeDOM();
-        this.setupEventListeners();
-        this.updateDisplay();
+        this.init();
     }
-
-    initializeDOM() {
-        // Create main game container if it doesn't exist
-        if (!document.getElementById('game-container')) {
-            const container = document.createElement('div');
-            container.id = 'game-container';
-            container.innerHTML = `
-                <div class="game-header">
-                    <h1>Skull King</h1>
-                    <div id="round-display">Round 1 of 10</div>
-                    <div id="hands-completed">Hands: 0/1</div>
-                </div>
-                <div class="game-content">
-                    <div id="current-hand-info"></div>
-                    <div id="score-display"></div>
-                    <button id="next-round-btn" disabled>Next Round</button>
-                    <button id="score-hand-btn">Complete Hand</button>
-                </div>
-                <div id="game-end-screen" style="display: none;">
-                    <h2>Game Complete!</h2>
-                    <div id="final-scores"></div>
-                    <button id="new-game-btn">New Game</button>
-                </div>
-            `;
-            document.body.appendChild(container);
+    
+    /**
+     * Initialize the application
+     */
+    init() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setupApp());
+        } else {
+            this.setupApp();
         }
     }
-
+    
+    /**
+     * Setup the application after DOM is ready
+     */
+    setupApp() {
+        // Initialize player setup
+        this.playerSetup = new PlayerSetup();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        console.log('Game application initialized');
+    }
+    
+    /**
+     * Setup event listeners for the application
+     */
     setupEventListeners() {
-        // Next round button handler
-        const nextRoundBtn = document.getElementById('next-round-btn');
-        if (nextRoundBtn) {
-            nextRoundBtn.addEventListener('click', () => {
-                this.advanceToNextRound();
-            });
-        }
-
-        // Score hand button handler
-        const scoreHandBtn = document.getElementById('score-hand-btn');
-        if (scoreHandBtn) {
-            scoreHandBtn.addEventListener('click', () => {
-                this.completeCurrentHand();
-            });
-        }
-
-        // New game button handler
-        const newGameBtn = document.getElementById('new-game-btn');
-        if (newGameBtn) {
-            newGameBtn.addEventListener('click', () => {
-                this.startNewGame();
-            });
-        }
-
-        // Listen for round state changes
-        this.roundManager.addEventListener('roundChanged', (event) => {
-            this.onRoundChanged(event.detail);
-        });
-
-        this.roundManager.addEventListener('gameEnded', () => {
-            this.onGameEnded();
-        });
-    }
-
-    updateDisplay() {
-        this.updateRoundDisplay();
-        this.updateHandsDisplay();
-        this.updateNextRoundButton();
-    }
-
-    updateRoundDisplay() {
-        const roundDisplay = document.getElementById('round-display');
-        if (roundDisplay) {
-            const currentRound = this.roundManager.getCurrentRound();
-            roundDisplay.textContent = `Round ${currentRound} of 10`;
+        const startGameBtn = document.getElementById('start-game-btn');
+        
+        if (startGameBtn) {
+            startGameBtn.addEventListener('click', () => this.handleStartGame());
         }
     }
-
-    updateHandsDisplay() {
-        const handsDisplay = document.getElementById('hands-completed');
-        if (handsDisplay) {
-            const currentRound = this.roundManager.getCurrentRound();
-            const completedHands = this.roundManager.getCompletedHands();
-            handsDisplay.textContent = `Hands: ${completedHands}/${currentRound}`;
-        }
-    }
-
-    updateNextRoundButton() {
-        const nextRoundBtn = document.getElementById('next-round-btn');
-        if (nextRoundBtn) {
-            const canAdvance = this.roundManager.canAdvanceRound();
-            nextRoundBtn.disabled = !canAdvance;
-            nextRoundBtn.textContent = canAdvance ? 'Next Round' : `Complete ${this.roundManager.getRemainingHands()} more hands`;
-        }
-    }
-
-    completeCurrentHand() {
+    
+    /**
+     * Handle Start Game button click
+     * Validates players and transitions to game mode
+     */
+    handleStartGame() {
         try {
-            // Simulate hand completion with some scoring
-            const handScore = this.generateHandScore();
-            
-            // Update hand manager
-            this.handManager.completeHand(handScore);
-            
-            // Increment completed hands in round manager
-            this.roundManager.incrementCompletedHands();
-            
-            // Update display
-            this.updateDisplay();
-            
-            console.log(`Hand completed with score: ${handScore}`);
-        } catch (error) {
-            console.error('Error completing hand:', error);
-        }
-    }
-
-    generateHandScore() {
-        // Simple scoring simulation - in real game this would come from actual gameplay
-        return Math.floor(Math.random() * 20) + 1;
-    }
-
-    advanceToNextRound() {
-        try {
-            if (this.roundManager.canAdvanceRound()) {
-                this.roundManager.advanceRound();
-            } else {
-                console.warn('Cannot advance round - not all hands completed');
+            // Validate player count before proceeding
+            if (!this.validatePlayerCount()) {
+                return;
             }
+            
+            // Get final player list from PlayerSetup
+            this.finalPlayerList = this.playerSetup.getPlayers();
+            
+            // Transition to game mode
+            this.startGame();
+            
         } catch (error) {
-            console.error('Error advancing round:', error);
+            console.error('Error starting game:', error);
+            this.showError('An error occurred while starting the game. Please try again.');
         }
     }
-
-    onRoundChanged(roundData) {
-        console.log(`Advanced to round ${roundData.currentRound}`);
+    
+    /**
+     * Validate that there are enough players to start the game
+     * @returns {boolean} True if validation passes
+     */
+    validatePlayerCount() {
+        const players = this.playerSetup.getPlayers();
         
-        // Reset hand manager for new round
-        this.handManager.resetForNewRound(roundData.currentRound);
+        // Clear any existing error messages
+        this.hideError();
         
-        // Update all displays
-        this.updateDisplay();
+        // Check minimum player count (at least 2 players required)
+        if (players.length < 2) {
+            this.showError('At least 2 players are required to start the game.');
+            return false;
+        }
         
-        // Show round transition message
-        this.showRoundTransition(roundData.currentRound);
+        // Check maximum player count (reasonable limit)
+        if (players.length > 8) {
+            this.showError('Maximum of 8 players allowed.');
+            return false;
+        }
+        
+        return true;
     }
-
-    showRoundTransition(roundNumber) {
-        const currentHandInfo = document.getElementById('current-hand-info');
-        if (currentHandInfo) {
-            currentHandInfo.innerHTML = `<div class="round-transition">Starting Round ${roundNumber}</div>`;
-            setTimeout(() => {
-                currentHandInfo.innerHTML = '';
-            }, 2000);
+    
+    /**
+     * Start the game - transition from setup to playing phase
+     */
+    startGame() {
+        // Update game state
+        this.gameStarted = true;
+        
+        // Hide player setup form
+        this.hidePlayerSetup();
+        
+        // Show game area
+        this.showGameArea();
+        
+        // Display final player list in game area
+        this.displayGamePlayers();
+        
+        // Prevent further player modifications
+        this.lockPlayerModifications();
+        
+        console.log('Game started with players:', this.finalPlayerList);
+    }
+    
+    /**
+     * Hide the player setup section
+     */
+    hidePlayerSetup() {
+        const setupSection = document.getElementById('player-setup-section');
+        if (setupSection) {
+            setupSection.classList.add('hidden');
         }
     }
-
-    onGameEnded() {
-        console.log('Game ended after 10 rounds');
-        this.gameEnded = true;
-        this.showGameEndScreen();
+    
+    /**
+     * Show the game area
+     */
+    showGameArea() {
+        const gameArea = document.getElementById('game-area');
+        if (gameArea) {
+            gameArea.classList.remove('hidden');
+        }
     }
-
-    showGameEndScreen() {
-        const gameEndScreen = document.getElementById('game-end-screen');
-        const gameContent = document.querySelector('.game-content');
-        
-        if (gameEndScreen && gameContent) {
-            // Hide main game content
-            gameContent.style.display = 'none';
+    
+    /**
+     * Display the final player list in the game area
+     */
+    displayGamePlayers() {
+        const gamePlayersList = document.getElementById('game-players-list');
+        if (gamePlayersList) {
+            gamePlayersList.innerHTML = '';
             
-            // Show end screen
-            gameEndScreen.style.display = 'block';
+            this.finalPlayerList.forEach((player, index) => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-item';
+                playerDiv.textContent = `${index + 1}. ${player.name}`;
+                gamePlayersList.appendChild(playerDiv);
+            });
+        }
+    }
+    
+    /**
+     * Lock player modifications by disabling PlayerSetup functionality
+     */
+    lockPlayerModifications() {
+        if (this.playerSetup) {
+            // Disable form inputs to prevent modifications
+            const nameInput = document.getElementById('player-name-input');
+            const addBtn = document.getElementById('add-player-btn');
             
-            // Update final scores
-            const finalScores = document.getElementById('final-scores');
-            if (finalScores) {
-                finalScores.innerHTML = this.generateFinalScoreDisplay();
-            }
+            if (nameInput) nameInput.disabled = true;
+            if (addBtn) addBtn.disabled = true;
+            
+            // Disable remove buttons on existing players
+            const removeButtons = document.querySelectorAll('.remove-player-btn');
+            removeButtons.forEach(btn => btn.disabled = true);
         }
     }
-
-    generateFinalScoreDisplay() {
-        const totalScore = this.scoreManager.getTotalScore();
-        return `
-            <div class="final-score">
-                <h3>Final Score: ${totalScore}</h3>
-                <p>Rounds Completed: 10/10</p>
-                <p>Total Hands Played: ${this.getTotalHandsPlayed()}</p>
-            </div>
-        `;
-    }
-
-    getTotalHandsPlayed() {
-        // Sum of hands from round 1 to 10 (1+2+3+...+10 = 55)
-        return 55;
-    }
-
-    startNewGame() {
-        // Reset all managers
-        this.roundManager = new RoundManager();
-        this.handManager = new HandManager();
-        this.scoreManager = new ScoreManager();
-        this.gameEnded = false;
-        
-        // Hide end screen and show game content
-        const gameEndScreen = document.getElementById('game-end-screen');
-        const gameContent = document.querySelector('.game-content');
-        
-        if (gameEndScreen && gameContent) {
-            gameEndScreen.style.display = 'none';
-            gameContent.style.display = 'block';
+    
+    /**
+     * Show error message to user
+     * @param {string} message - Error message to display
+     */
+    showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
         }
-        
-        // Re-setup event listeners for new managers
-        this.setupEventListeners();
-        
-        // Update display
-        this.updateDisplay();
-        
-        console.log('New game started');
     }
-
-    // Public API methods
-    getCurrentRound() {
-        return this.roundManager.getCurrentRound();
+    
+    /**
+     * Hide error message
+     */
+    hideError() {
+        const errorDiv = document.getElementById('error-message');
+        if (errorDiv) {
+            errorDiv.classList.add('hidden');
+        }
     }
-
-    isGameEnded() {
-        return this.gameEnded;
+    
+    /**
+     * Get the current game state
+     * @returns {boolean} True if game has started, false if in setup mode
+     */
+    isGameStarted() {
+        return this.gameStarted;
     }
-
-    getGameState() {
-        return {
-            currentRound: this.roundManager.getCurrentRound(),
-            completedHands: this.roundManager.getCompletedHands(),
-            canAdvanceRound: this.roundManager.canAdvanceRound(),
-            gameEnded: this.gameEnded,
-            totalScore: this.scoreManager.getTotalScore()
-        };
+    
+    /**
+     * Get the final player list (available after game starts)
+     * @returns {Array} Array of player objects
+     */
+    getFinalPlayerList() {
+        return [...this.finalPlayerList]; // Return copy to prevent external modifications
+    }
+    
+    /**
+     * Get reference to PlayerSetup instance
+     * @returns {PlayerSetup|null} PlayerSetup instance or null if not initialized
+     */
+    getPlayerSetup() {
+        return this.playerSetup;
     }
 }
 
-// Initialize game when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.skullKingGame = new SkullKingGame();
-    console.log('Skull King game initialized');
-});
-
-// Export for testing
-export { SkullKingGame };
+// Initialize the application
+const gameApp = new GameApp();

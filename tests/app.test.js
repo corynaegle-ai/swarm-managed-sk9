@@ -1,93 +1,59 @@
-import { SkullKingGame } from '../js/app.js';
-import { RoundManager } from '../js/RoundManager.js';
-
-describe('SkullKingGame Integration', () => {
-    let game;
-    let mockRoundManager;
-
+/**
+ * Test suite for GameApp integration
+ */
+describe('GameApp', () => {
+    let gameApp;
+    let mockPlayerSetup;
+    
     beforeEach(() => {
-        document.body.innerHTML = '';
-        game = new SkullKingGame();
+        // Setup DOM
+        document.body.innerHTML = `
+            <div id="player-setup-section">
+                <input id="player-name-input" type="text">
+                <button id="add-player-btn">Add Player</button>
+                <button id="start-game-btn">Start Game</button>
+            </div>
+            <div id="game-area" class="hidden"></div>
+            <div id="error-message" class="hidden"></div>
+            <div id="game-players-list"></div>
+        `;
+        
+        // Mock PlayerSetup
+        global.PlayerSetup = jest.fn().mockImplementation(() => ({
+            getPlayers: jest.fn().mockReturnValue([{name: 'Player1'}, {name: 'Player2'}])
+        }));
+        
+        gameApp = new GameApp();
     });
-
-    afterEach(() => {
-        document.body.innerHTML = '';
+    
+    test('validates minimum player count', () => {
+        gameApp.playerSetup.getPlayers.mockReturnValue([{name: 'Player1'}]);
+        expect(gameApp.validatePlayerCount()).toBe(false);
     });
-
-    test('should initialize with RoundManager integration', () => {
-        expect(game.roundManager).toBeInstanceOf(RoundManager);
-        expect(game.getCurrentRound()).toBe(1);
+    
+    test('validates maximum player count', () => {
+        const manyPlayers = Array(10).fill().map((_, i) => ({name: `Player${i}`}));
+        gameApp.playerSetup.getPlayers.mockReturnValue(manyPlayers);
+        expect(gameApp.validatePlayerCount()).toBe(false);
     });
-
-    test('should update round display when round changes', () => {
-        const roundDisplay = document.getElementById('round-display');
-        expect(roundDisplay.textContent).toBe('Round 1 of 10');
-        
-        // Complete all hands for round 1
-        game.completeCurrentHand();
-        game.advanceToNextRound();
-        
-        expect(roundDisplay.textContent).toBe('Round 2 of 10');
+    
+    test('starts game successfully with valid players', () => {
+        gameApp.handleStartGame();
+        expect(gameApp.isGameStarted()).toBe(true);
+        expect(gameApp.getFinalPlayerList()).toHaveLength(2);
     });
-
-    test('should enable next round button only when all hands completed', () => {
-        const nextRoundBtn = document.getElementById('next-round-btn');
-        
-        // Initially disabled (0/1 hands completed)
-        expect(nextRoundBtn.disabled).toBe(true);
-        
-        // Complete the hand
-        game.completeCurrentHand();
-        
-        // Should be enabled now
-        expect(nextRoundBtn.disabled).toBe(false);
+    
+    test('hides player setup after game starts', () => {
+        gameApp.startGame();
+        const setupSection = document.getElementById('player-setup-section');
+        expect(setupSection.classList.contains('hidden')).toBe(true);
     });
-
-    test('should integrate hand scoring with round progression', () => {
-        const initialHands = game.roundManager.getCompletedHands();
-        
-        game.completeCurrentHand();
-        
-        expect(game.roundManager.getCompletedHands()).toBe(initialHands + 1);
-    });
-
-    test('should end game after round 10 completion', () => {
-        // Simulate completing all 10 rounds
-        for (let round = 1; round <= 10; round++) {
-            // Complete required hands for current round
-            for (let hand = 0; hand < round; hand++) {
-                game.completeCurrentHand();
-            }
-            
-            if (round < 10) {
-                game.advanceToNextRound();
-            }
-        }
-        
-        // Game should end after round 10
-        expect(game.isGameEnded()).toBe(true);
-        
-        const gameEndScreen = document.getElementById('game-end-screen');
-        expect(gameEndScreen.style.display).toBe('block');
-    });
-
-    test('should update hands display correctly', () => {
-        const handsDisplay = document.getElementById('hands-completed');
-        expect(handsDisplay.textContent).toBe('Hands: 0/1');
-        
-        game.completeCurrentHand();
-        expect(handsDisplay.textContent).toBe('Hands: 1/1');
-    });
-
-    test('should handle round transitions properly', () => {
-        // Complete round 1
-        game.completeCurrentHand();
-        game.advanceToNextRound();
-        
-        expect(game.getCurrentRound()).toBe(2);
-        expect(game.roundManager.getCompletedHands()).toBe(0); // Reset for new round
-        
-        const handsDisplay = document.getElementById('hands-completed');
-        expect(handsDisplay.textContent).toBe('Hands: 0/2');
+    
+    test('locks player modifications after game starts', () => {
+        gameApp.startGame();
+        const nameInput = document.getElementById('player-name-input');
+        const addBtn = document.getElementById('add-player-btn');
+        expect(nameInput.disabled).toBe(true);
+        expect(addBtn.disabled).toBe(true);
     });
 });
