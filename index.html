@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swarm Managed Game</title>
+    <link rel="stylesheet" href="css/rounds.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>Swarm Managed Game</h1>
+        </header>
+        
+        <main class="game-main">
+            <!-- Round Display Section -->
+            <section class="round-display" id="roundDisplay">
+                <div class="round-info">
+                    <div class="current-round">
+                        <span class="round-label">Round</span>
+                        <span class="round-number" id="currentRound">1</span>
+                    </div>
+                    
+                    <div class="progress-indicators">
+                        <div class="round-progress">
+                            <label>Round Progress:</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="roundProgress" style="width: 10%"></div>
+                            </div>
+                            <span class="progress-text" id="roundProgressText">1/10 rounds</span>
+                        </div>
+                        
+                        <div class="hands-progress">
+                            <label>Hands This Round:</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="handsProgress" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text" id="handsProgressText">0/5 hands</span>
+                        </div>
+                    </div>
+                    
+                    <div class="round-controls">
+                        <button class="next-round-btn" id="nextRoundBtn" disabled>
+                            Next Round
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Game Content Area -->
+            <section class="game-content">
+                <div class="game-area">
+                    <p>Game content will be displayed here...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // Basic round management functionality
+        let currentRound = 1;
+        let currentHand = 0;
+        let handsPerRound = 5;
+        const maxRounds = 10;
+        
+        function updateRoundDisplay() {
+            document.getElementById('currentRound').textContent = currentRound;
+            document.getElementById('roundProgressText').textContent = `${currentRound}/10 rounds`;
+            
+            const roundProgressPercent = (currentRound / maxRounds) * 100;
+            document.getElementById('roundProgress').style.width = roundProgressPercent + '%';
+            
+            document.getElementById('handsProgressText').textContent = `${currentHand}/${handsPerRound} hands`;
+            
+            const handsProgressPercent = (currentHand / handsPerRound) * 100;
+            document.getElementById('handsProgress').style.width = handsProgressPercent + '%';
+            
+            const nextBtn = document.getElementById('nextRoundBtn');
+            if (currentHand >= handsPerRound && currentRound < maxRounds) {
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('disabled');
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.add('disabled');
+            }
+        }
+        
+        document.getElementById('nextRoundBtn').addEventListener('click', function() {
+            if (currentRound < maxRounds && currentHand >= handsPerRound) {
+                currentRound++;
+                currentHand = 0;
+                updateRoundDisplay();
+            }
+        });
+        
+        // Simulate hand completion for demo purposes
+        function completeHand() {
+            if (currentHand < handsPerRound) {
+                currentHand++;
+                updateRoundDisplay();
+            }
+        }
+        
+        // Initialize display
+        updateRoundDisplay();
+        
+        // Demo: simulate hand completion every 3 seconds
+        setInterval(() => {
+            if (currentHand < handsPerRound) {
+                completeHand();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
