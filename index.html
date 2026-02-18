@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecard with Bonus Points</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Game Scorecard</h1>
+        
+        <div class="game-controls">
+            <button id="new-round-btn">New Round</button>
+            <button id="reset-game-btn">Reset Game</button>
+        </div>
+
+        <div class="scorecard-section">
+            <h2>Current Round</h2>
+            <div id="scorecard-container">
+                <div class="scorecard-header">
+                    <div class="player-name">Player</div>
+                    <div class="bid-column">Bid</div>
+                    <div class="actual-column">Actual</div>
+                    <div class="bonus-column">Bonus</div>
+                    <div class="score-column">Score</div>
+                </div>
+                <div id="player-rows">
+                    <!-- Player rows will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+
+        <div class="players-section">
+            <h2>Players</h2>
+            <div class="add-player">
+                <input type="text" id="player-name-input" placeholder="Enter player name">
+                <button id="add-player-btn">Add Player</button>
+            </div>
+            <div id="players-list">
+                <!-- Players will be listed here -->
+            </div>
+        </div>
+
+        <div class="game-summary">
+            <h2>Game Summary</h2>
+            <div id="total-scores">
+                <!-- Total scores will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
