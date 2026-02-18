@@ -1,75 +1,76 @@
 /**
- * Tests for scoring system
+ * Test suite for scoring.js
  */
 
-const { calculateRoundScore, calculateGameScore, formatScoreDisplay } = require('../js/scoring.js');
+// Import the scoring functions
+const { calculateRoundScore, updatePlayerScores } = require('../js/scoring.js');
 
-describe('Scoring System', () => {
-    describe('calculateRoundScore', () => {
-        test('applies bonus when bid equals actual', () => {
-            const player = { bid: 3, actual: 3, bonus: 10 };
-            const result = calculateRoundScore(player);
-            
-            expect(result.bonusApplied).toBe(10);
-            expect(result.bonusStatus).toBe('applied');
-            expect(result.totalScore).toBe(13); // 3 base + 10 bonus
-            expect(result.bidMatched).toBe(true);
-        });
+describe('calculateRoundScore', () => {
+  test('correct bid returns +20 per trick', () => {
+    expect(calculateRoundScore(3, 3, 7)).toBe(60);
+    expect(calculateRoundScore(5, 5, 10)).toBe(100);
+    expect(calculateRoundScore(1, 1, 7)).toBe(20);
+  });
+  
+  test('incorrect bid returns -10 per trick off', () => {
+    expect(calculateRoundScore(2, 4, 7)).toBe(-20);
+    expect(calculateRoundScore(5, 3, 7)).toBe(-20);
+    expect(calculateRoundScore(1, 4, 7)).toBe(-30);
+  });
+  
+  test('successful zero bid returns +10 × cards dealt', () => {
+    expect(calculateRoundScore(0, 0, 7)).toBe(70);
+    expect(calculateRoundScore(0, 0, 10)).toBe(100);
+    expect(calculateRoundScore(0, 0, 1)).toBe(10);
+  });
+  
+  test('failed zero bid returns -10 × cards dealt', () => {
+    expect(calculateRoundScore(0, 1, 7)).toBe(-70);
+    expect(calculateRoundScore(0, 2, 7)).toBe(-70);
+    expect(calculateRoundScore(0, 1, 10)).toBe(-100);
+  });
+  
+  test('edge cases handled gracefully', () => {
+    expect(() => calculateRoundScore(-1, 0, 7)).toThrow('All parameters must be non-negative');
+    expect(() => calculateRoundScore(8, 3, 7)).toThrow('Bid and tricks taken cannot exceed cards dealt');
+    expect(() => calculateRoundScore('3', 3, 7)).toThrow('All parameters must be numbers');
+  });
+});
 
-        test('ignores bonus when bid does not equal actual', () => {
-            const player = { bid: 3, actual: 2, bonus: 10 };
-            const result = calculateRoundScore(player);
-            
-            expect(result.bonusApplied).toBe(0);
-            expect(result.bonusStatus).toBe('ignored');
-            expect(result.totalScore).toBe(2); // 2 base + 0 bonus
-            expect(result.bidMatched).toBe(false);
-        });
-
-        test('handles zero bonus correctly', () => {
-            const player = { bid: 2, actual: 2, bonus: 0 };
-            const result = calculateRoundScore(player);
-            
-            expect(result.bonusApplied).toBe(0);
-            expect(result.bonusStatus).toBe('applied');
-            expect(result.totalScore).toBe(2);
-        });
-
-        test('throws error for invalid input', () => {
-            expect(() => calculateRoundScore({})).toThrow();
-            expect(() => calculateRoundScore(null)).toThrow();
-        });
-    });
-
-    describe('formatScoreDisplay', () => {
-        test('formats applied bonus correctly', () => {
-            const scoreResult = {
-                baseScore: 3,
-                bonusPoints: 10,
-                bonusApplied: 10,
-                bonusStatus: 'applied',
-                totalScore: 13
-            };
-            
-            const display = formatScoreDisplay(scoreResult);
-            expect(display.bonusStatusText).toBe('+10 bonus');
-            expect(display.bonusStatusClass).toBe('bonus-applied');
-            expect(display.showBonusIndicator).toBe(true);
-        });
-
-        test('formats ignored bonus correctly', () => {
-            const scoreResult = {
-                baseScore: 2,
-                bonusPoints: 10,
-                bonusApplied: 0,
-                bonusStatus: 'ignored',
-                totalScore: 2
-            };
-            
-            const display = formatScoreDisplay(scoreResult);
-            expect(display.bonusStatusText).toBe('10 bonus ignored');
-            expect(display.bonusStatusClass).toBe('bonus-ignored');
-            expect(display.showBonusIndicator).toBe(true);
-        });
-    });
+describe('updatePlayerScores', () => {
+  test('applies round scores to player totals', () => {
+    const players = [
+      { id: 1, name: 'Player 1', score: 100 },
+      { id: 2, name: 'Player 2', score: 50 }
+    ];
+    
+    const roundResults = [
+      { playerId: 1, score: 60 },
+      { playerId: 2, score: -20 }
+    ];
+    
+    const updated = updatePlayerScores(players, roundResults);
+    
+    expect(updated[0].score).toBe(160);
+    expect(updated[1].score).toBe(30);
+    expect(updated[0].name).toBe('Player 1'); // Ensure other properties preserved
+  });
+  
+  test('initializes score if missing', () => {
+    const players = [
+      { id: 1, name: 'Player 1' }
+    ];
+    
+    const roundResults = [
+      { playerId: 1, score: 60 }
+    ];
+    
+    const updated = updatePlayerScores(players, roundResults);
+    expect(updated[0].score).toBe(60);
+  });
+  
+  test('handles invalid input gracefully', () => {
+    expect(() => updatePlayerScores('not array', [])).toThrow('Both parameters must be arrays');
+    expect(() => updatePlayerScores([], [{ score: 10 }])).toThrow('Round results must have playerId and numeric score properties');
+  });
 });

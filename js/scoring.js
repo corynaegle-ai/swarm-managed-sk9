@@ -1,113 +1,96 @@
 /**
- * Scoring system for trick-taking card game
- * Handles score calculations including bonus points logic
+ * Scoring engine for the card game
+ * Handles score calculation and player score updates
  */
 
 /**
- * Calculate the score for a single round for a player
- * @param {Object} player - Player object with bid, actual, and bonus properties
- * @param {number} player.bid - Number of tricks the player bid
- * @param {number} player.actual - Number of tricks the player actually took
- * @param {number} player.bonus - Bonus points available for exact bids
- * @returns {Object} Score calculation result
+ * Calculate the score for a single round based on bid and tricks taken
+ * @param {number} bid - The number of tricks the player bid
+ * @param {number} tricksTaken - The actual number of tricks taken
+ * @param {number} cardsDealt - The number of cards dealt this round
+ * @returns {number} The score for this round
  */
-function calculateRoundScore(player) {
-    if (!player || typeof player.bid === 'undefined' || typeof player.actual === 'undefined') {
-        throw new Error('Invalid player object: must have bid and actual properties');
+function calculateRoundScore(bid, tricksTaken, cardsDealt) {
+  // Input validation
+  if (typeof bid !== 'number' || typeof tricksTaken !== 'number' || typeof cardsDealt !== 'number') {
+    throw new Error('All parameters must be numbers');
+  }
+  
+  if (bid < 0 || tricksTaken < 0 || cardsDealt < 0) {
+    throw new Error('All parameters must be non-negative');
+  }
+  
+  if (tricksTaken > cardsDealt || bid > cardsDealt) {
+    throw new Error('Bid and tricks taken cannot exceed cards dealt');
+  }
+  
+  // Special case: zero bid
+  if (bid === 0) {
+    if (tricksTaken === 0) {
+      // Successful zero bid: +10 × cards dealt
+      return 10 * cardsDealt;
+    } else {
+      // Failed zero bid: -10 × cards dealt
+      return -10 * cardsDealt;
     }
-
-    const bid = parseInt(player.bid);
-    const actual = parseInt(player.actual);
-    const bonus = parseInt(player.bonus) || 0;
-
-    // Validate inputs
-    if (isNaN(bid) || isNaN(actual) || bid < 0 || actual < 0) {
-        throw new Error('Bid and actual must be non-negative numbers');
-    }
-
-    let baseScore = 0;
-    let bonusApplied = 0;
-    let bonusStatus = 'ignored';
-
-    // Base scoring: points for tricks taken
-    baseScore = actual;
-
-    // Bonus points logic: only applied if bid equals actual
-    if (bid === actual) {
-        bonusApplied = bonus;
-        bonusStatus = 'applied';
-    }
-
-    const totalScore = baseScore + bonusApplied;
-
-    return {
-        baseScore: baseScore,
-        bonusPoints: bonus,
-        bonusApplied: bonusApplied,
-        bonusStatus: bonusStatus, // 'applied' or 'ignored'
-        totalScore: totalScore,
-        bidMatched: bid === actual
-    };
+  }
+  
+  // Regular bidding
+  if (bid === tricksTaken) {
+    // Correct bid: +20 per trick taken
+    return 20 * tricksTaken;
+  } else {
+    // Incorrect bid: -10 per trick off
+    const tricksOff = Math.abs(bid - tricksTaken);
+    return -10 * tricksOff;
+  }
 }
 
 /**
- * Calculate total game score for a player across multiple rounds
- * @param {Array} rounds - Array of round results
- * @returns {Object} Total score breakdown
+ * Update player scores by applying round results
+ * @param {Array} players - Array of player objects with score property
+ * @param {Array} roundResults - Array of round result objects with playerId and score
+ * @returns {Array} Updated players array
  */
-function calculateGameScore(rounds) {
-    if (!Array.isArray(rounds)) {
-        throw new Error('Rounds must be an array');
+function updatePlayerScores(players, roundResults) {
+  // Input validation
+  if (!Array.isArray(players) || !Array.isArray(roundResults)) {
+    throw new Error('Both parameters must be arrays');
+  }
+  
+  // Create a copy of players to avoid mutating the original
+  const updatedPlayers = players.map(player => ({ ...player }));
+  
+  // Apply each round result
+  roundResults.forEach(result => {
+    if (!result.hasOwnProperty('playerId') || typeof result.score !== 'number') {
+      throw new Error('Round results must have playerId and numeric score properties');
     }
-
-    let totalBase = 0;
-    let totalBonusApplied = 0;
-    let roundsWithBonus = 0;
-
-    rounds.forEach(round => {
-        totalBase += round.baseScore || 0;
-        totalBonusApplied += round.bonusApplied || 0;
-        if (round.bonusStatus === 'applied') {
-            roundsWithBonus++;
-        }
-    });
-
-    return {
-        totalBaseScore: totalBase,
-        totalBonusApplied: totalBonusApplied,
-        totalScore: totalBase + totalBonusApplied,
-        roundsWithBonus: roundsWithBonus,
-        totalRounds: rounds.length
-    };
-}
-
-/**
- * Format score display with bonus status for UI
- * @param {Object} scoreResult - Result from calculateRoundScore
- * @returns {Object} Formatted display data
- */
-function formatScoreDisplay(scoreResult) {
-    const bonusText = scoreResult.bonusStatus === 'applied' 
-        ? `+${scoreResult.bonusApplied} bonus` 
-        : `${scoreResult.bonusPoints} bonus ignored`;
     
-    const bonusClass = scoreResult.bonusStatus === 'applied' 
-        ? 'bonus-applied' 
-        : 'bonus-ignored';
-
-    return {
-        scoreText: `${scoreResult.totalScore} (${scoreResult.baseScore} base${scoreResult.bonusPoints > 0 ? ', ' + bonusText : ''})`,
-        bonusStatusText: bonusText,
-        bonusStatusClass: bonusClass,
-        showBonusIndicator: scoreResult.bonusPoints > 0
-    };
+    const player = updatedPlayers.find(p => p.id === result.playerId);
+    if (player) {
+      // Initialize score if it doesn't exist
+      if (typeof player.score !== 'number') {
+        player.score = 0;
+      }
+      player.score += result.score;
+    }
+  });
+  
+  return updatedPlayers;
 }
 
-// Export functions for use in other modules
+// Export functions for use by other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        calculateRoundScore,
-        calculateGameScore,
-        formatScoreDisplay
-    };
+  // Node.js environment
+  module.exports = {
+    calculateRoundScore,
+    updatePlayerScores
+  };
+} else {
+  // Browser environment
+  window.Scoring = {
+    calculateRoundScore,
+    updatePlayerScores
+  };
 }
