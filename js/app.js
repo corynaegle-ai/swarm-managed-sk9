@@ -159,8 +159,16 @@ class GameApp {
      */
     lockPlayerModifications() {
         if (this.playerSetup) {
-            // Disable the PlayerSetup instance to prevent modifications
-            this.playerSetup.disable();
+            // Disable form inputs to prevent modifications
+            const nameInput = document.getElementById('player-name-input');
+            const addBtn = document.getElementById('add-player-btn');
+            
+            if (nameInput) nameInput.disabled = true;
+            if (addBtn) addBtn.disabled = true;
+            
+            // Disable remove buttons on existing players
+            const removeButtons = document.querySelectorAll('.remove-player-btn');
+            removeButtons.forEach(btn => btn.disabled = true);
         }
     }
     
