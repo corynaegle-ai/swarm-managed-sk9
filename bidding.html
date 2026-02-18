@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bidding Round - Skull King</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bidding Round</h1>
+            <div class="round-info">
+                <p>Round: <span id="round-number">1</span></p>
+                <p>Available Hands: <span id="available-hands">1</span></p>
+            </div>
+        </header>
+
+        <main>
+            <form id="bidding-form">
+                <div id="player-bids" class="player-bids">
+                    <!-- Player bid inputs will be generated dynamically -->
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="edit-bids-btn" class="btn btn-secondary" style="display: none;">Edit Bids</button>
+                    <button type="button" id="confirm-bids-btn" class="btn btn-primary" disabled>Confirm Bids</button>
+                </div>
+            </form>
+
+            <div id="bid-review" class="bid-review" style="display: none;">
+                <h3>Review Bids</h3>
+                <div id="bid-summary">
+                    <!-- Bid summary will be displayed here -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <button id="back-to-game-btn" class="btn btn-outline">Back to Game</button>
+        </footer>
+    </div>
+
+    <script src="js/gameState.js"></script>
+    <script src="js/bidding.js"></script>
+</body>
+</html>
