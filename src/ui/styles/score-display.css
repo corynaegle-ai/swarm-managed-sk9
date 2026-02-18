@@ -1,0 +1,282 @@
+/* Score Display Styles */
+.score-display {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Styles */
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+}
+
+.score-header h2 {
+  margin: 0;
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+.game-info {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.round-info {
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.game-status {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.game-status.ongoing {
+  background: #28a745;
+  color: white;
+}
+
+.game-status.final {
+  background: #ffc107;
+  color: #212529;
+}
+
+/* Section Styles */
+.current-standings,
+.round-breakdown,
+.final-rankings {
+  margin-bottom: 30px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.current-standings h3,
+.round-breakdown h3,
+.final-rankings h3 {
+  margin: 0 0 20px 0;
+  color: #343a40;
+  font-size: 1.5em;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+/* Table Styles */
+.standings-table,
+.breakdown-table,
+.final-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.standings-table th,
+.breakdown-table th,
+.final-standings-table th {
+  background: #6c757d;
+  color: white;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.standings-table td,
+.breakdown-table td,
+.final-standings-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.standings-table tr:hover,
+.breakdown-table tr:hover,
+.final-standings-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Leader Highlighting */
+.leader {
+  background: linear-gradient(90deg, #fff3cd, #ffffff) !important;
+  border-left: 4px solid #ffc107;
+}
+
+.leader td {
+  font-weight: 600;
+}
+
+.final-winner {
+  background: linear-gradient(90deg, #d1ecf1, #ffffff) !important;
+  border-left: 4px solid #17a2b8;
+}
+
+.final-winner td {
+  font-weight: 600;
+}
+
+/* Specific Column Styles */
+.rank {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  width: 80px;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #495057;
+}
+
+.total-score {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #28a745;
+}
+
+.round-score {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
+.average-score {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.rounds-played {
+  text-align: center;
+  color: #6c757d;
+}
+
+/* Round Breakdown Specific */
+.round-number {
+  font-weight: bold;
+  background: #f8f9fa;
+  text-align: center;
+}
+
+.totals-row {
+  background: #e9ecef;
+  border-top: 2px solid #6c757d;
+}
+
+.totals-row td {
+  border-bottom: none;
+}
+
+.totals-label {
+  text-align: center;
+}
+
+/* Final Rankings */
+.winner-announcement {
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #28a745;
+  padding: 20px;
+  background: #d4edda;
+  border: 2px solid #c3e6cb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.score-details {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .score-display {
+    padding: 15px;
+  }
+  
+  .score-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .score-header h2 {
+    font-size: 1.8em;
+  }
+  
+  .game-info {
+    justify-content: center;
+  }
+  
+  .standings-table,
+  .breakdown-table,
+  .final-standings-table {
+    font-size: 0.9em;
+  }
+  
+  .standings-table th,
+  .breakdown-table th,
+  .final-standings-table th,
+  .standings-table td,
+  .breakdown-table td,
+  .final-standings-table td {
+    padding: 8px 6px;
+  }
+  
+  .winner-announcement {
+    font-size: 1.1em;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-header h2 {
+    font-size: 1.5em;
+  }
+  
+  .breakdown-table {
+    font-size: 0.8em;
+  }
+  
+  .score-details {
+    font-size: 0.8em;
+  }
+  
+  .rank {
+    width: 60px;
+  }
+}
