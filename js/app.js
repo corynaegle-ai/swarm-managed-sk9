@@ -1,9 +1,9 @@
-// Import validation functions (assumed to be available globally from validation.js)
+// Import validation functions from validation.js
 // Real-time input validation implementation
 
 class GameFormValidator {
     constructor() {
-        this.hasErrors = false;
+        this.formErrors = new Map(); // Track errors per form
         this.initializeValidation();
     }
 
@@ -11,6 +11,11 @@ class GameFormValidator {
         // Get all forms and inputs
         const forms = document.querySelectorAll('form');
         const inputs = document.querySelectorAll('input');
+
+        // Initialize form error tracking
+        forms.forEach(form => {
+            this.formErrors.set(form.id, new Set());
+        });
 
         // Add event listeners to all inputs
         inputs.forEach(input => {
@@ -28,137 +33,54 @@ class GameFormValidator {
         const input = event.target;
         const inputName = input.name || input.id;
         const value = input.value.trim();
+        const form = input.closest('form');
         
         // Clear previous error state
-        this.clearInputError(input);
+        this.clearInputError(input, form);
         
-        // Validate based on input type and name
+        // Validate based on input type and name using validation.js functions
         let validationResult = this.validateInput(inputName, value, input.type);
         
         if (!validationResult.isValid) {
-            this.showInputError(input, validationResult.message);
+            this.showInputError(input, validationResult.message, form);
         }
         
-        // Update global error state
-        this.updateGlobalErrorState();
+        // Update form-specific error state
+        this.updateFormErrorState(form);
     }
 
     validateInput(inputName, value, inputType) {
-        // Use validation functions if available, otherwise use built-in validation
+        // Use validation functions from validation.js
+        if (!window.ValidationUtils) {
+            console.error('ValidationUtils not available');
+            return { isValid: true, message: '' };
+        }
+
         switch (inputName) {
             case 'playerName':
+                return window.ValidationUtils.validatePlayerName(value, true);
+            
             case 'partnerName':
-                return this.validateName(value, inputName === 'playerName');
+                return window.ValidationUtils.validatePlayerName(value, false);
             
             case 'bidAmount':
-                return this.validateBidAmount(value);
+                return window.ValidationUtils.validateBidAmount(value);
             
             case 'actualTricks':
-                return this.validateTricks(value);
+                return window.ValidationUtils.validateTricksAmount(value);
             
             case 'bonusPoints':
-                return this.validateBonusPoints(value);
+                return window.ValidationUtils.validateBonusPoints(value);
             
             case 'bonusReason':
-                return this.validateBonusReason(value);
+                return window.ValidationUtils.validateBonusReason(value);
             
             default:
                 return { isValid: true, message: '' };
         }
     }
 
-    validateName(value, required = false) {
-        if (required && (!value || value.length === 0)) {
-            return { isValid: false, message: 'Player name is required' };
-        }
-        
-        if (value && value.length > 0 && value.length < 2) {
-            return { isValid: false, message: 'Name must be at least 2 characters' };
-        }
-        
-        if (value && value.length > 50) {
-            return { isValid: false, message: 'Name must be less than 50 characters' };
-        }
-        
-        if (value && !/^[a-zA-Z\s]+$/.test(value)) {
-            return { isValid: false, message: 'Name can only contain letters and spaces' };
-        }
-        
-        return { isValid: true, message: '' };
-    }
-
-    validateBidAmount(value) {
-        if (!value && value !== '0') {
-            return { isValid: false, message: 'Bid amount is required' };
-        }
-        
-        const numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            return { isValid: false, message: 'Bid amount must be a number' };
-        }
-        
-        if (numValue < 0) {
-            return { isValid: false, message: 'Bid amount cannot be negative' };
-        }
-        
-        if (numValue > 13) {
-            return { isValid: false, message: 'Bid amount cannot exceed 13' };
-        }
-        
-        return { isValid: true, message: '' };
-    }
-
-    validateTricks(value) {
-        if (!value && value !== '0') {
-            return { isValid: false, message: 'Number of tricks is required' };
-        }
-        
-        const numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            return { isValid: false, message: 'Tricks must be a number' };
-        }
-        
-        if (numValue < 0) {
-            return { isValid: false, message: 'Tricks cannot be negative' };
-        }
-        
-        if (numValue > 13) {
-            return { isValid: false, message: 'Tricks cannot exceed 13' };
-        }
-        
-        return { isValid: true, message: '' };
-    }
-
-    validateBonusPoints(value) {
-        if (!value || value === '') {
-            return { isValid: true, message: '' }; // Bonus points are optional
-        }
-        
-        const numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            return { isValid: false, message: 'Bonus points must be a number' };
-        }
-        
-        if (numValue < -100) {
-            return { isValid: false, message: 'Bonus points cannot be less than -100' };
-        }
-        
-        if (numValue > 100) {
-            return { isValid: false, message: 'Bonus points cannot exceed 100' };
-        }
-        
-        return { isValid: true, message: '' };
-    }
-
-    validateBonusReason(value) {
-        if (value && value.length > 100) {
-            return { isValid: false, message: 'Bonus reason must be less than 100 characters' };
-        }
-        
-        return { isValid: true, message: '' };
-    }
-
-    showInputError(input, message) {
+    showInputError(input, message, form) {
         // Add invalid class to input
         input.classList.add('invalid');
         
@@ -170,9 +92,14 @@ class GameFormValidator {
             errorElement.textContent = message;
             errorElement.classList.add('show');
         }
+
+        // Add error to form-specific error tracking
+        if (form && this.formErrors.has(form.id)) {
+            this.formErrors.get(form.id).add(input.id || input.name);
+        }
     }
 
-    clearInputError(input) {
+    clearInputError(input, form) {
         // Remove invalid class from input
         input.classList.remove('invalid');
         
@@ -184,18 +111,24 @@ class GameFormValidator {
             errorElement.textContent = '';
             errorElement.classList.remove('show');
         }
+
+        // Remove error from form-specific error tracking
+        if (form && this.formErrors.has(form.id)) {
+            this.formErrors.get(form.id).delete(input.id || input.name);
+        }
     }
 
-    updateGlobalErrorState() {
-        // Check if any inputs have errors
-        const invalidInputs = document.querySelectorAll('input.invalid');
-        this.hasErrors = invalidInputs.length > 0;
+    updateFormErrorState(form) {
+        if (!form || !this.formErrors.has(form.id)) return;
+
+        // Check if this form has any errors
+        const formHasErrors = this.formErrors.get(form.id).size > 0;
         
-        // Update submit button states
-        const submitButtons = document.querySelectorAll('button[type="submit"]');
-        submitButtons.forEach(button => {
-            button.disabled = this.hasErrors;
-        });
+        // Update submit button state for this form only
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = formHasErrors;
+        }
     }
 
     handleFormSubmission(event) {
@@ -210,22 +143,25 @@ class GameFormValidator {
             const validationResult = this.validateInput(inputName, value, input.type);
             
             if (!validationResult.isValid) {
-                this.showInputError(input, validationResult.message);
+                this.showInputError(input, validationResult.message, form);
                 formHasErrors = true;
             } else {
-                this.clearInputError(input);
+                this.clearInputError(input, form);
             }
         });
         
-        // Prevent submission if there are errors
-        if (formHasErrors || this.hasErrors) {
+        // Update form error state
+        this.updateFormErrorState(form);
+        
+        // Prevent submission if THIS form has errors
+        if (formHasErrors || (this.formErrors.has(form.id) && this.formErrors.get(form.id).size > 0)) {
             event.preventDefault();
-            console.log('Form submission prevented due to validation errors');
+            console.log(`Form ${form.id} submission prevented due to validation errors`);
             return false;
         }
         
         // Allow form submission
-        console.log('Form validation passed, allowing submission');
+        console.log(`Form ${form.id} validation passed, allowing submission`);
         return true;
     }
 }
