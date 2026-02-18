@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game Score Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Card Game Score Tracker</h1>
+        </header>
+        
+        <!-- Player Management Section -->
+        <section class="player-management">
+            <h2>Player Management</h2>
+            <div class="add-player">
+                <input type="text" id="playerName" placeholder="Enter player name" maxlength="20">
+                <button id="addPlayerBtn">Add Player</button>
+            </div>
+            <div class="player-list" id="playerList">
+                <!-- Players will be added here dynamically -->
+            </div>
+        </section>
+
+        <!-- Game Controls -->
+        <section class="game-controls">
+            <h2>Game Controls</h2>
+            <div class="round-info">
+                <span>Round: <span id="currentRound">1</span></span>
+                <button id="newRoundBtn">Start New Round</button>
+                <button id="resetGameBtn">Reset Game</button>
+            </div>
+        </section>
+
+        <!-- Bid Entry Section -->
+        <section class="bid-entry">
+            <h2>Bid Entry</h2>
+            <div id="bidInputs">
+                <!-- Bid inputs will be generated dynamically -->
+            </div>
+            <button id="submitBidsBtn" disabled>Submit Bids</button>
+        </section>
+
+        <!-- Trick Recording Section -->
+        <section class="trick-recording">
+            <h2>Trick Recording</h2>
+            <div id="trickInputs">
+                <!-- Trick inputs will be generated dynamically -->
+            </div>
+            <button id="submitTricksBtn" disabled>Submit Tricks</button>
+        </section>
+
+        <!-- Score Display Section -->
+        <section class="score-display">
+            <h2>Score Board</h2>
+            <div class="score-table-container">
+                <table id="scoreTable">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Total Score</th>
+                            <th>Last Round</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody">
+                        <!-- Scores will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Game History Section -->
+        <section class="game-history">
+            <h2>Round History</h2>
+            <div class="history-container">
+                <table id="historyTable">
+                    <thead id="historyHeader">
+                        <!-- Headers will be generated dynamically -->
+                    </thead>
+                    <tbody id="historyBody">
+                        <!-- History will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/game.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

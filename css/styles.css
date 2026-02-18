@@ -1,0 +1,289 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+/* Section styles */
+section {
+    background: white;
+    margin-bottom: 25px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+section h2 {
+    color: #34495e;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+/* Player management */
+.add-player {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.add-player input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.add-player button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-player button:hover {
+    background-color: #2980b9;
+}
+
+.player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #ecf0f1;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+.remove-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.remove-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Game controls */
+.game-controls {
+    background-color: #f8f9fa;
+}
+
+.round-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.round-info span {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.round-info button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#newRoundBtn {
+    background-color: #27ae60;
+    color: white;
+}
+
+#newRoundBtn:hover {
+    background-color: #229954;
+}
+
+#resetGameBtn {
+    background-color: #e67e22;
+    color: white;
+}
+
+#resetGameBtn:hover {
+    background-color: #d35400;
+}
+
+/* Input sections */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    min-width: 150px;
+    font-weight: bold;
+}
+
+.input-group input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100px;
+}
+
+#submitBidsBtn,
+#submitTricksBtn {
+    background-color: #8e44ad;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#submitBidsBtn:hover,
+#submitTricksBtn:hover {
+    background-color: #732d91;
+}
+
+#submitBidsBtn:disabled,
+#submitTricksBtn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #e8f4fd;
+}
+
+.total-score {
+    font-weight: bold;
+    font-size: 18px;
+    color: #27ae60;
+}
+
+.last-round {
+    color: #8e44ad;
+    font-weight: bold;
+}
+
+/* Score table container for responsiveness */
+.score-table-container,
+.history-container {
+    overflow-x: auto;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .add-player {
+        flex-direction: column;
+    }
+    
+    .round-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .input-group label {
+        min-width: auto;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 8px;
+    }
+}
+
+/* Animation for score updates */
+.score-update {
+    animation: scoreHighlight 0.5s ease-in-out;
+}
+
+@keyframes scoreHighlight {
+    0% { background-color: #f39c12; }
+    100% { background-color: transparent; }
+}
+
+/* Empty state messages */
+.empty-message {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 20px;
+}
